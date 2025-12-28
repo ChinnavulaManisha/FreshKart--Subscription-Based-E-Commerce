@@ -1,0 +1,16 @@
+{
+    "name": "daily-essentials-platform",
+    "version": "1.0.0",
+    "description": "Subscription-Based E-Commerce Platform",
+    "scripts": {
+        "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+        "seed": "cd backend && npm run seed",
+        "dev": "concurrently \"npm run server --prefix backend\" \"npm run dev --prefix frontend\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
