@@ -3,6 +3,10 @@ Proud to share my latest project: FRESHKART, a modern subscription-based e-comme
 
 <img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/a5ad3f06-5cf7-436b-8a0e-7b46a9b9c513" />
 
+## Login Page:
+<img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/8318ead8-2e80-48f5-a5cf-3c4dcae15716" />
+
+
 
 ## 🔑 KEY FEATURES:
 
