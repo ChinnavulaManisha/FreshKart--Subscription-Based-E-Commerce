@@ -1,6 +1,9 @@
 # 🛒 FRESHKART – SUBSCRIPTION-BASED E-COMMERCE PLATFORM 🌱✨
 Proud to share my latest project: FRESHKART, a modern subscription-based e-commerce web application designed to simplify recurring purchases of daily essentials like groceries, fruits, vegetables, and household items. Unlike traditional platforms such as Flipkart or Blinkit where users must place orders repeatedly, FreshKart enables automatic scheduled deliveries through subscriptions — saving time and effort for customers. 🚀📦
 
+<img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/a5ad3f06-5cf7-436b-8a0e-7b46a9b9c513" />
+
+
 ## 🔑 KEY FEATURES:
 
 🔁 Subscription-Based Ordering (Daily / Weekly / Monthly)
