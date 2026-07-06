@@ -6,6 +6,8 @@ Proud to share my latest project: FRESHKART, a modern subscription-based e-comme
 ## Login Page:
 <img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/8318ead8-2e80-48f5-a5cf-3c4dcae15716" />
 
+## Landing Page
+<img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/41344247-2820-4dab-bc41-0f6250b83dad" />
 
 
 ## 🔑 KEY FEATURES:
