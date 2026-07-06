@@ -13,29 +13,45 @@ Proud to share my latest project: FRESHKART, a modern subscription-based e-comme
 ## 🔑 KEY FEATURES:
 
 🔁 Subscription-Based Ordering (Daily / Weekly / Monthly)
+
 🛍️ One-Time Order Option Along with Subscriptions
+
 📅 Smart Delivery Scheduling & Auto-Renewal
+
 🔐 Secure Authentication with OTP Verification
+
 👤 User Profile & Subscription Management
+
 🧾 Order History & Billing Details
+
 📦 Product Management Dashboard (Admin)
+
 🔔 Real-Time Order & Subscription Status Tracking
+
 📱 Responsive UI for All Devices
 
 ## 👉 USER FLOW:
 
 Click on Get Started to explore available products
+
 Select products and choose a subscription plan
+
 Complete authentication using OTP
+
 OTP will be generated and displayed in the backend terminal
+
 Subscription is activated and deliveries begin automatically
 
 ## 💻 TECH STACK:
 
 🌐 Frontend: React.js, Tailwind CSS
+
 ⚙️ Backend: Node.js
+
 💽 Database: MongoDB
+
 🔐 Authentication: OTP-Based Login
+
 🔄 State Management: React Hooks
 
 💡 This project helped me understand subscription-based business models, full-stack development with the MERN stack, backend authentication flows, and building scalable e-commerce systems for real-world use cases.
