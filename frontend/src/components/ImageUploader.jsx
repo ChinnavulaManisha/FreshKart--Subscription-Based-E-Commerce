@@ -54,7 +54,7 @@ const ImageUploader = ({ productId, currentImage, hasImage, onUploadSuccess }) =
             };
 
             const { data } = await axios.post(
-                `http://localhost:5000/api/products/${productId}/upload-image`,
+                `https://freshkart-subscription-based-e-commerce.onrender.com/api/products/${productId}/upload-image`,
                 formData,
                 config
             );
@@ -93,7 +93,7 @@ const ImageUploader = ({ productId, currentImage, hasImage, onUploadSuccess }) =
             };
 
             const { data } = await axios.delete(
-                `http://localhost:5000/api/products/${productId}/image`,
+                `https://freshkart-subscription-based-e-commerce.onrender.com/api/products/${productId}/image`,
                 config
             );
 
@@ -129,7 +129,7 @@ const ImageUploader = ({ productId, currentImage, hasImage, onUploadSuccess }) =
                         />
                     ) : currentImage ? (
                         <img
-                            src={`http://localhost:5000${currentImage}`}
+                            src={`https://freshkart-subscription-based-e-commerce.onrender.com${currentImage}`}
                             alt="Product"
                             className="w-full h-full object-cover"
                         />
