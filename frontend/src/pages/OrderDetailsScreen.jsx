@@ -240,7 +240,11 @@ const OrderDetailsScreen = () => {
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Status</p>
-                                        {order.isPaid ? (
+                                        {order.orderStatus === 'Cancelled' ? (
+                                            <div className="flex items-center gap-2 text-red-700 font-bold">
+                                                <AlertCircle size={16} /> Cancelled
+                                            </div>
+                                        ) : order.isPaid ? (
                                             <div className="flex items-center gap-2 text-emerald-700 font-bold">
                                                 <CheckCircle size={16} /> Paid on {new Date(order.paidAt).toLocaleDateString()}
                                             </div>

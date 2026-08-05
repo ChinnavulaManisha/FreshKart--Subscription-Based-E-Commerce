@@ -96,14 +96,16 @@ const OrdersScreen = () => {
                                             )}
 
                                             {/* Payment Status Badge */}
-                                            {order.isPaid ? (
-                                                <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-emerald-100">
-                                                    <CheckCircle size={16} /> Paid
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center gap-2 text-red-700 bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-red-100">
-                                                    <Clock size={16} /> Payment Pending
-                                                </div>
+                                            {order.orderStatus !== 'Cancelled' && (
+                                                order.isPaid ? (
+                                                    <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-emerald-100">
+                                                        <CheckCircle size={16} /> Paid
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-2 text-red-700 bg-red-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-red-100">
+                                                        <Clock size={16} /> Payment Pending
+                                                    </div>
+                                                )
                                             )}
                                         </div>
 
