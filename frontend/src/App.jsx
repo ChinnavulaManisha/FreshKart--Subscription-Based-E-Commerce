@@ -64,7 +64,7 @@ const Layout = () => {
           {/* Public & Core Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/shop" element={<ProtectedRoute><HomeScreen /></ProtectedRoute>} />
-          <Route path="/cart" element={<CartScreen />} />
+          <Route path="/cart" element={<ProtectedRoute><CartScreen /></ProtectedRoute>} />
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
           <Route path="/logged-out" element={<LogoutScreen />} />
