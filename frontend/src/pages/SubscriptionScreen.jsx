@@ -68,9 +68,9 @@ const SubscriptionScreen = () => {
                     Back to Shop
                 </button>
 
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
                     {/* Left: Product Preview */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="md:col-span-2 space-y-6">
                         <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center justify-center aspect-square overflow-hidden group">
                             <motion.img
                                 initial={{ scale: 0.9, opacity: 0 }}
@@ -91,7 +91,7 @@ const SubscriptionScreen = () => {
                     </div>
 
                     {/* Right: Subscription Form */}
-                    <div className="lg:col-span-3 bg-white p-10 rounded-[3rem] shadow-2xl shadow-emerald-500/5 border border-emerald-50 relative overflow-hidden">
+                    <div className="md:col-span-3 bg-white p-10 rounded-[3rem] shadow-2xl shadow-emerald-500/5 border border-emerald-50 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
 
                         <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
