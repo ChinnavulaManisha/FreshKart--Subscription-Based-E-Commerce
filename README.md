@@ -18,8 +18,6 @@ Proud to share my latest project: FRESHKART, a modern subscription-based e-comme
 
 📅 Smart Delivery Scheduling & Auto-Renewal
 
-🔐 Secure Authentication with OTP Verification
-
 👤 User Profile & Subscription Management
 
 🧾 Order History & Billing Details
