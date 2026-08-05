@@ -32,7 +32,7 @@ const LoginScreen = () => {
 
     useEffect(() => {
         if (user) {
-            navigate('/shop');
+            navigate(user.isAdmin ? '/admin/dashboard' : '/shop');
         }
     }, [user, navigate]);
 
@@ -50,8 +50,8 @@ const LoginScreen = () => {
         }
 
         try {
-            await login(email, password, remember, loginRole);
-            navigate('/shop');
+            const data = await login(email, password, remember, loginRole);
+            navigate(data.isAdmin ? '/admin/dashboard' : '/shop');
         } catch (err) {
             const errorMsg = typeof err === 'string' ? err : (err.response?.data?.message || err.message || 'Login failed');
             if (errorMsg === 'Network Error') {

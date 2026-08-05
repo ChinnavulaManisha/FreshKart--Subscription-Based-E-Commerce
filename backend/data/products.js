@@ -1,4 +1,4 @@
-﻿const products = [
+const products = [
     // --- BABY CARE (14) ---
     { name: "Mom Care 26 Piece Gift Hamper", brand: "Mom Care", category: "Baby Care", image: "/Baby Care/26 piece gift hamper.jpg", description: "A comprehensive newborn essential kit featuring 26 premium care items.", price: 1299 },
     { name: "Himalaya Baby Shampoo", brand: "Himalaya", category: "Baby Care", image: "/Baby Care/Himalaya baby shampoo.jpg", description: "Mild no-tears formula enriched with hibiscus and chickpea for soft baby hair.", price: 185 },
@@ -142,6 +142,7 @@
 // Add common fields to all products
 const finalProducts = products.map(p => ({
     ...p,
+    hasImage: true,
     countInStock: Math.floor(Math.random() * 50) + 10,
     rating: (3.8 + Math.random() * 1.2).toFixed(1),
     numReviews: Math.floor(Math.random() * 1000) + 50,

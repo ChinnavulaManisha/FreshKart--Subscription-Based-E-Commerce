@@ -130,7 +130,11 @@ const CartScreen = () => {
                                 </div>
                                 <div className="flex justify-between text-gray-600 font-medium">
                                     <span>Shipping</span>
-                                    <span className="text-emerald-600">Free</span>
+                                    {Number(cartStats.shippingPrice) === 0 ? (
+                                        <span className="text-emerald-600 font-bold">Free</span>
+                                    ) : (
+                                        <span className="font-bold text-gray-900">₹{cartStats.shippingPrice.toFixed(2)}</span>
+                                    )}
                                 </div>
                                 <div className="flex justify-between text-gray-600 font-medium">
                                     <span>Tax estimate</span>
@@ -138,7 +142,7 @@ const CartScreen = () => {
                                 </div>
                                 <div className="border-t border-dashed border-gray-200 pt-4 mt-4 flex justify-between items-end">
                                     <span className="text-lg font-bold text-gray-900">Total</span>
-                                    <span className="text-3xl font-black text-emerald-600 tracking-tight">₹{cartStats.itemsPrice.toFixed(2)}</span>
+                                    <span className="text-3xl font-black text-emerald-600 tracking-tight">₹{cartStats.totalPrice}</span>
                                 </div>
                             </div>
 

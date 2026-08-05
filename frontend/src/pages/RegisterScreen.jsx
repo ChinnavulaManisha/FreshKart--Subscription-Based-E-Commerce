@@ -6,20 +6,15 @@ import { User, Mail, Lock, Phone, ArrowRight, ShieldCheck, CheckCircle2, Shoppin
 import axios from '../api/axios';
 
 const RegisterScreen = () => {
-    const [step, setStep] = useState(1); // 1: Details, 2: OTP
+    const [step, setStep] = useState(1); // 1: Details, 3: Success
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [phone, setPhone] = useState('');
-    const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    // Timer State
-    const [timer, setTimer] = useState(30);
-    const [canResend, setCanResend] = useState(false);
 
     const { register, user } = useAuth();
     const navigate = useNavigate();
@@ -30,29 +25,9 @@ const RegisterScreen = () => {
         }
     }, [navigate, user]);
 
-    // Timer Logic
-    useEffect(() => {
-        let interval;
-        if (step === 2 && timer > 0) {
-            interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-        } else if (timer === 0) {
-            setCanResend(true);
-            clearInterval(interval);
-        }
-        return () => clearInterval(interval);
-    }, [step, timer]);
 
-    const handleOtpChange = (element, index) => {
-        if (isNaN(element.value)) return false;
-        setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
-        if (element.value !== '' && element.nextSibling) {
-            element.nextSibling.focus();
-        }
-    };
 
-    const sendOtpHandler = async (e) => {
+    const registerHandler = async (e) => {
         if (e) e.preventDefault();
         setMessage(null);
         setError(null);
@@ -63,10 +38,6 @@ const RegisterScreen = () => {
         }
         if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
             setError('Please enter a valid email address');
-            return;
-        }
-        if (!email.endsWith('@gmail.com')) {
-            setError('Only @gmail.com addresses are supported for registration');
             return;
         }
         if (password !== confirmPassword) {
@@ -86,47 +57,16 @@ const RegisterScreen = () => {
 
         setLoading(true);
         try {
-            await axios.post('/users/send-otp', { email });
-            setStep(2);
-            setTimer(30);
-            setCanResend(false);
-            setLoading(false);
-        } catch (err) {
-            setError(err.response?.data?.message || err.message);
-            setLoading(false);
-        }
-    };
-
-    const verifyHandler = async (e) => {
-        e.preventDefault();
-        const enteredOtp = otp.join('');
-        if (enteredOtp.length < 6) {
-            setError('Please enter the full 6-digit code');
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-        try {
-            // 1. Verify OTP with Backend
-            await axios.post('/users/verify-otp', { email, otp: enteredOtp });
-
-            // 2. Register the user
+            // Directly register the user
             await register(name, email, password, phone, '');
 
             setStep(3); // Success Step
             setTimeout(() => {
-                navigate('/login', { state: { message: 'Account verified successfully! Please login.' } });
+                navigate('/login', { state: { message: 'Account created successfully! Please login.' } });
             }, 3000);
         } catch (err) {
-            setError(err.response?.data?.message || err.message);
+            setError(err || 'Failed to register');
             setLoading(false);
-        }
-    };
-
-    const resendOtpHandler = () => {
-        if (canResend) {
-            sendOtpHandler();
         }
     };
 
@@ -197,7 +137,7 @@ const RegisterScreen = () => {
                                     </div>
                                 )}
 
-                                <form onSubmit={sendOtpHandler} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                                <form onSubmit={registerHandler} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                                     <div className="md:col-span-2 input-label-border group mb-4">
                                         <label className="bg-white">Full Name</label>
                                         <input type="text" placeholder="Johnathan Doe" value={name} onChange={(e) => setName(e.target.value)} className="py-2.5 group-focus-within:border-emerald-500/50" required />
@@ -241,7 +181,7 @@ const RegisterScreen = () => {
                                             disabled={loading}
                                             className="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-md uppercase tracking-wider text-xs transition-all disabled:opacity-50"
                                         >
-                                            {loading ? 'Preparing...' : 'Authenticate & Verify'}
+                                            {loading ? 'Preparing...' : 'Create Account'}
                                         </motion.button>
                                     </div>
                                 </form>
@@ -280,74 +220,7 @@ const RegisterScreen = () => {
                             </motion.div>
                         )}
 
-                        {step === 2 && (
-                            <motion.div
-                                key="step2"
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                className="w-full text-center"
-                            >
-                                <div className="mb-8 flex flex-col items-center">
-                                    <motion.div
-                                        animate={{ rotate: [0, 5, -5, 0] }}
-                                        transition={{ duration: 4, repeat: Infinity }}
-                                        className="w-20 h-20 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 mb-6 border-4 border-emerald-100/50 shadow-xl shadow-emerald-500/10"
-                                    >
-                                        <ShieldCheck size={40} strokeWidth={2} />
-                                    </motion.div>
-                                    <h2 className="text-4xl font-black text-emerald-500 tracking-tight mb-2">Verify Identity</h2>
-                                    <p className="text-gray-400 font-bold max-w-xs mx-auto text-xs uppercase tracking-wider leading-relaxed">Secret code dispatched to <br /><span className="text-emerald-600 font-bold lowercase tracking-normal text-sm">{email}</span></p>
-                                </div>
 
-                                {(message || error) && (
-                                    <div className={`${error ? 'bg-red-50 border-red-500' : 'bg-emerald-50 border-emerald-500'} border-l-4 p-4 mb-8 rounded-xl`}>
-                                        <p className={`${error ? 'text-red-700' : 'text-emerald-700'} font-bold text-sm italic`}>
-                                            {message || error}
-                                        </p>
-                                    </div>
-                                )}
-
-                                <form onSubmit={verifyHandler}>
-                                    <div className="flex justify-center gap-3 mb-8">
-                                        {otp.map((data, index) => (
-                                            <input
-                                                key={index}
-                                                type="text"
-                                                maxLength="1"
-                                                className="otp-input w-12 h-14 text-2xl shadow-lg shadow-emerald-500/5 font-black border-2"
-                                                value={data}
-                                                onChange={e => handleOtpChange(e.target, index)}
-                                                onFocus={e => e.target.select()}
-                                            />
-                                        ))}
-                                    </div>
-
-                                    <motion.button
-                                        whileHover={{ scale: 1.02, backgroundColor: '#059669' }}
-                                        whileTap={{ scale: 0.98 }}
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-emerald-200 uppercase tracking-wider text-sm transition-all disabled:opacity-50"
-                                    >
-                                        {loading ? 'Finalizing...' : 'Complete Initialization'}
-                                    </motion.button>
-                                </form>
-
-                                <div className="mt-12 group cursor-pointer">
-                                    <p className="text-gray-400 font-black text-[10px] uppercase tracking-[0.2em]">
-                                        Dispatch Failure? <br />
-                                        <button onClick={() => setStep(1)} className="text-emerald-600 hover:text-emerald-900 mt-4 transition-colors">Reconfigure Entry</button>
-                                        <span className="mx-4 text-gray-200 italic">OR</span>
-                                        {canResend ? (
-                                            <button onClick={resendOtpHandler} className="text-emerald-600 hover:text-emerald-900 transition-colors">Request New Code</button>
-                                        ) : (
-                                            <span className="text-gray-300 italic animate-pulse">Available in {timer}s</span>
-                                        )}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        )}
 
                         {step === 3 && (
                             <motion.div

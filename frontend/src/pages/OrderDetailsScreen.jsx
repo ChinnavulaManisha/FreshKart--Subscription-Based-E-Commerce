@@ -7,11 +7,21 @@ import {
     Download, ShieldCheck, Mail, Phone, AlertCircle
 } from 'lucide-react';
 
+const TRACKING_STEPS = ['Order Placed', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
+
 const OrderDetailsScreen = () => {
     const { id } = useParams();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState('');
+
+    useEffect(() => {
+        if (order) {
+            setSelectedStatus(order.orderStatus || 'Order Placed');
+        }
+    }, [order]);
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -29,6 +39,23 @@ const OrderDetailsScreen = () => {
 
         fetchOrder();
     }, [id]);
+
+    const updateStatusHandler = async () => {
+        try {
+            setUpdatingStatus(true);
+            const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            
+            await axios.put(`/orders/${order._id}/status`, { status: selectedStatus }, config);
+            
+            const { data } = await axios.get(`/orders/${order._id}`, config);
+            setOrder(data);
+            setUpdatingStatus(false);
+        } catch (err) {
+            alert(err.response ? err.response.data.message : err.message);
+            setUpdatingStatus(false);
+        }
+    };
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -70,9 +97,83 @@ const OrderDetailsScreen = () => {
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Left Column: Details */}
-                    <div className="lg:col-span-2 space-y-6">
+                <div className="space-y-8">
+                    <div className="space-y-6">
+                        
+                        {/* Admin Status Control */}
+                        {JSON.parse(localStorage.getItem('userInfo'))?.isAdmin && (
+                            <div className="bg-yellow-50 rounded-3xl p-8 shadow-sm border border-yellow-200 flex flex-col md:flex-row items-center gap-4 justify-between">
+                                <div>
+                                    <h3 className="text-lg font-bold text-yellow-900 mb-1">Admin Control: Update Status</h3>
+                                    <p className="text-sm text-yellow-700">Change the order lifecycle status here. This updates the tracking timeline.</p>
+                                </div>
+                                <div className="flex items-center gap-3 w-full md:w-auto">
+                                    <select 
+                                        value={selectedStatus} 
+                                        onChange={(e) => setSelectedStatus(e.target.value)}
+                                        className="px-4 py-3 rounded-xl border border-yellow-300 outline-none focus:ring-2 ring-yellow-400 bg-white text-gray-900 font-bold"
+                                    >
+                                        {TRACKING_STEPS.map(step => (
+                                            <option key={step} value={step}>{step}</option>
+                                        ))}
+                                    </select>
+                                    <button 
+                                        onClick={updateStatusHandler}
+                                        disabled={updatingStatus}
+                                        className="bg-gray-900 hover:bg-gray-800 text-white font-bold px-6 py-3 rounded-xl transition-all"
+                                    >
+                                        {updatingStatus ? 'Updating...' : 'Update'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tracking Timeline */}
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold text-gray-900 mb-10 flex items-center gap-2">
+                                <Package className="text-emerald-600" /> Track Your Order
+                            </h2>
+                            
+                            <div className="relative">
+                                {/* Desktop Line */}
+                                <div className="absolute top-5 left-0 w-full h-1.5 bg-gray-100 -translate-y-1/2 rounded-full z-0 hidden md:block"></div>
+                                <div 
+                                    className="absolute top-5 left-0 h-1.5 bg-emerald-500 -translate-y-1/2 rounded-full z-0 transition-all duration-700 ease-in-out hidden md:block"
+                                    style={{ width: `${(TRACKING_STEPS.indexOf(order.orderStatus) >= 0 ? (TRACKING_STEPS.indexOf(order.orderStatus) / (TRACKING_STEPS.length - 1)) * 100 : 0)}%` }}
+                                ></div>
+
+                                {/* Steps */}
+                                <div className="flex flex-col md:flex-row justify-between relative z-10 gap-8 md:gap-0">
+                                    {TRACKING_STEPS.map((step, index) => {
+                                        const currentStepIndex = TRACKING_STEPS.indexOf(order.orderStatus);
+                                        const isCompleted = index <= currentStepIndex;
+                                        const isCurrent = index === currentStepIndex;
+                                        
+                                        return (
+                                            <div key={step} className="flex md:flex-col items-center gap-4 md:gap-3 flex-1">
+                                                {/* Mobile Line */}
+                                                {index !== 0 && (
+                                                    <div className={`absolute left-[19px] h-full w-1 -top-8 -z-10 md:hidden ${index <= currentStepIndex ? 'bg-emerald-500' : 'bg-gray-100'}`}></div>
+                                                )}
+                                                
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border-4 transition-all duration-500 bg-white relative z-20 ${
+                                                    isCompleted ? 'border-emerald-500 text-emerald-600 shadow-lg shadow-emerald-500/20' : 'border-gray-200 text-gray-300'
+                                                }`}>
+                                                    {isCompleted ? <CheckCircle size={20} className="text-emerald-500" /> : index + 1}
+                                                </div>
+                                                <div className="md:text-center w-full md:w-auto relative">
+                                                    <p className={`font-bold text-sm leading-tight transition-colors ${isCompleted ? 'text-gray-900' : 'text-gray-400'}`}>{step}</p>
+                                                    {isCurrent && (
+                                                        <span className="md:absolute md:-bottom-6 md:left-1/2 md:-translate-x-1/2 text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">Current</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Order Items */}
                         <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -154,10 +255,10 @@ const OrderDetailsScreen = () => {
                         </div>
                     </div>
 
-                    {/* Right Column: Order Summary */}
-                    <div className="lg:col-span-1">
-                        <div className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 sticky top-8 border border-gray-100">
-                            <h3 className="font-black text-2xl text-gray-900 mb-8">Order Summary</h3>
+                    {/* Bottom Order Summary */}
+                    <div className="max-w-2xl mx-auto w-full">
+                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                            <h3 className="font-black text-2xl text-gray-900 mb-8 text-center">Order Summary</h3>
 
                             <div className="space-y-4 mb-8 text-sm">
                                 <div className="flex justify-between text-gray-500">
@@ -168,10 +269,12 @@ const OrderDetailsScreen = () => {
                                     <span>Shipping</span>
                                     <span className="text-gray-900 font-bold">₹{order.shippingPrice.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-500">
-                                    <span>Tax</span>
-                                    <span className="font-bold text-gray-900">₹{order.taxPrice.toFixed(2)}</span>
-                                </div>
+                                {order.taxPrice > 0 && (
+                                    <div className="flex justify-between text-gray-500">
+                                        <span>Tax</span>
+                                        <span className="font-bold text-gray-900">₹{order.taxPrice.toFixed(2)}</span>
+                                    </div>
+                                )}
                                 <div className="border-t border-dashed border-gray-200 pt-4 mt-4 flex justify-between items-end">
                                     <span className="font-bold text-gray-900 text-lg">Total Paid</span>
                                     <span className="text-3xl font-black text-gray-900">₹{order.totalPrice.toFixed(2)}</span>

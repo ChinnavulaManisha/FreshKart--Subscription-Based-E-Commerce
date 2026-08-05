@@ -17,7 +17,7 @@ const Header = () => {
 
     const promoMessages = [
         "🎉 Super Value Deals - Save More with Coupons",
-        "🚚 Free Delivery on Orders Above ₹500",
+        "🚚 Free Delivery on all Orders!",
         "⚡ Flash Sale - Up to 50% Off on Fresh Produce"
     ];
 

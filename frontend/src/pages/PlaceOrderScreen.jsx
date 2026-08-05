@@ -207,12 +207,13 @@ const PlaceOrderScreen = () => {
                                 </div>
                                 <div className="flex justify-between text-gray-400 font-medium">
                                     <span>Delivery Charge</span>
-                                    <span className="text-emerald-400 font-bold">FREE</span>
+                                    {Number(cartStats.shippingPrice) === 0 ? (
+                                        <span className="text-emerald-400 font-bold">FREE</span>
+                                    ) : (
+                                        <span className="text-white font-bold">₹{cartStats.shippingPrice.toFixed(2)}</span>
+                                    )}
                                 </div>
-                                <div className="flex justify-between text-gray-400 font-medium">
-                                    <span>Tax</span>
-                                    <span className="text-white font-bold">₹{cartStats.taxPrice.toFixed(2)}</span>
-                                </div>
+
                                 {isCOD && (
                                     <div className="flex justify-between text-yellow-400 font-medium">
                                         <span>COD Handling</span>

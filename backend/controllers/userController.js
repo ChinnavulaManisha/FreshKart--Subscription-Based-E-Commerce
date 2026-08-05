@@ -145,11 +145,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
-const sendEmail = require('../utils/sendEmail');
-
-// Temporary in-memory OTP storage
-// Note: In production, use Redis or a DB table with auto-TTL
-const OTP_MAP = {};
+const generateOTP = require('../utils/generateOTP');
+const OtpService = require('../services/otpService');
+const EmailService = require('../services/emailService');
 
 /**
  * @desc    Generate and send 6-digit OTP for registration
@@ -173,36 +171,14 @@ const sendOTP = asyncHandler(async (req, res) => {
         throw new Error('Only @gmail.com addresses are supported');
     }
 
-    // Generate 6-digit code
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    OTP_MAP[email] = {
-        otp,
-        expiresAt: Date.now() + 10 * 60 * 1000, // Valid for 10 minutes
-    };
+    // Generate cryptographically secure 6-digit OTP
+    const otp = generateOTP();
+    OtpService.store(email, otp);
 
-    try {
-        await sendEmail({
-            email,
-            subject: 'FreshKart - Verify Your Email',
-            message: `Your verification code is: ${otp}. It expires in 10 minutes.`,
-            html: `<div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; max-width: 500px; margin: auto;">
-                    <h2 style="color: #10b981; text-align: center;">FreshKart Verification</h2>
-                    <p>Welcome to FreshKart! Use the code below to verify your email address:</p>
-                    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1a1a1a; margin: 20px 0;">${otp}</div>
-                    <p style="color: #64748b; font-size: 14px;">If you didn't request this, please ignore this email.</p>
-                   </div>`,
-        });
+    // Send OTP email (never throws — handles errors internally)
+    await EmailService.sendOtpEmail(email, otp);
 
-        // Developer Logging: Prints OTP to terminal if SMTP is not configured
-        if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'testuser@ethereal.email') {
-            console.log(`otp = ${otp}`);
-        }
-
-        res.status(200).json({ message: 'OTP sent successfully' });
-    } catch (error) {
-        res.status(500);
-        throw new Error('Email delivery failed. Please check backend console if using test account.');
-    }
+    res.status(200).json({ message: 'OTP sent successfully' });
 });
 
 /**
@@ -213,16 +189,14 @@ const sendOTP = asyncHandler(async (req, res) => {
 const verifyOTP = asyncHandler(async (req, res) => {
     const { email, otp } = req.body;
 
-    const record = OTP_MAP[email];
-
     // Check for existence, match, and expiration
-    if (!record || record.otp !== otp || Date.now() > record.expiresAt) {
+    if (!OtpService.verify(email, otp)) {
         res.status(400);
         throw new Error('Invalid or expired verification code');
     }
 
     // Cleanup: Remove OTP after successful use
-    delete OTP_MAP[email];
+    OtpService.cleanup(email);
     res.status(200).json({ message: 'Email verified successfully' });
 });
 

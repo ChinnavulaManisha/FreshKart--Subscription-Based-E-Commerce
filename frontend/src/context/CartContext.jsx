@@ -83,8 +83,8 @@ export const CartProvider = ({ children }) => {
     };
 
     const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
-    const shippingPrice = itemsPrice > 500 ? 0 : 50;
-    const taxPrice = Number((0.15 * itemsPrice).toFixed(2));
+    const shippingPrice = 0;
+    const taxPrice = 0; // Tax removed
     const totalPrice = (itemsPrice + shippingPrice + taxPrice).toFixed(2);
 
     return (

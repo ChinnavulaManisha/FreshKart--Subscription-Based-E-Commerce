@@ -2,15 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Wallet, Truck, Plus, CheckCircle, Smartphone, ArrowLeft } from 'lucide-react';
 import CheckoutSteps from '../components/CheckoutSteps';
+import { useCart } from '../context/CartContext';
 
 const PaymentScreen = () => {
     const navigate = useNavigate();
+    const { cartStats } = useCart();
     const [paymentMethod, setPaymentMethod] = useState('UPI');
     const [upiApp, setUpiApp] = useState('Google Pay');
     const [upiId, setUpiId] = useState('');
     const [isUpiVerified, setIsUpiVerified] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
     const [upiError, setUpiError] = useState('');
+    
+    // UI Mock States
+    const [showUpiModal, setShowUpiModal] = useState(false);
+    const [paymentTimer, setPaymentTimer] = useState(300);
+
+    useEffect(() => {
+        let interval;
+        if (showUpiModal && paymentTimer > 0) {
+            interval = setInterval(() => {
+                setPaymentTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (paymentTimer === 0) {
+            setShowUpiModal(false);
+            setUpiError('Payment request timed out.');
+        }
+        return () => clearInterval(interval);
+    }, [showUpiModal, paymentTimer]);
+
+    const handleMockPaymentSuccess = () => {
+        setShowUpiModal(false);
+        navigate('/placeorder');
+    };
 
     // Load saved method
     useEffect(() => {
@@ -48,6 +72,9 @@ const PaymentScreen = () => {
         localStorage.setItem('paymentMethod', paymentMethod);
         if (paymentMethod === 'UPI') {
             localStorage.setItem('paymentDetails', JSON.stringify({ upiApp, upiId }));
+            setShowUpiModal(true);
+            setPaymentTimer(300);
+            return;
         }
         navigate('/placeorder');
     };
@@ -128,6 +155,14 @@ const PaymentScreen = () => {
                                                 {upiError && <p className="text-[10px] text-red-500 mt-1 ml-1 font-bold">{upiError}</p>}
                                                 {isUpiVerified && <p className="text-[10px] text-emerald-600 mt-1 ml-1 font-bold">UPI ID linked successfully</p>}
                                             </div>
+
+                                            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col items-center justify-center">
+                                                <p className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Or Scan to Pay</p>
+                                                <div className="p-2 bg-white border-2 border-gray-100 rounded-xl shadow-sm hover:border-yellow-400 transition-colors cursor-pointer">
+                                                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi%3A%2F%2Fpay%3Fpa%3Dfreshkart%40okaxis%26pn%3DFreshkart%20Store%26cu%3DINR%26am%3D${cartStats?.totalPrice || 0}`} alt="Freshkart UPI QR Code" className="w-32 h-32 object-contain rounded-lg" />
+                                                </div>
+                                                <p className="text-[10px] text-gray-400 mt-2 font-medium">Scan with any UPI App (Google Pay, PhonePe, Paytm)</p>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -202,6 +237,40 @@ const PaymentScreen = () => {
                     </div>
                 </div>
             </div>
+
+            {/* UPI Collect Request Mock Modal */}
+            {showUpiModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center relative border-4 border-yellow-400 m-4">
+                        <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Smartphone size={32} className="text-yellow-600 animate-pulse" />
+                        </div>
+                        <h2 className="text-2xl font-black text-gray-900 mb-2">Approve Payment</h2>
+                        <p className="text-sm text-gray-600 mb-6 font-medium leading-relaxed">
+                            A collect request of <span className="font-bold text-gray-900">₹{Number(cartStats?.totalPrice || 0).toFixed(2)}</span> has been sent to your <span className="font-bold text-yellow-600">{upiApp}</span> app linked to <span className="font-bold">{upiId}</span>.
+                        </p>
+                        
+                        <div className="text-4xl font-black text-gray-900 mb-8 tracking-wider">
+                            {Math.floor(paymentTimer / 60).toString().padStart(2, '0')}:{(paymentTimer % 60).toString().padStart(2, '0')}
+                        </div>
+
+                        <div className="space-y-3">
+                            <button
+                                onClick={handleMockPaymentSuccess}
+                                className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl shadow-lg transition-all"
+                            >
+                                Simulate Payment Success
+                            </button>
+                            <button
+                                onClick={() => { setShowUpiModal(false); setUpiError('Payment cancelled by user.'); }}
+                                className="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all"
+                            >
+                                Cancel Payment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

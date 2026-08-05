@@ -28,11 +28,9 @@ const OrderSuccessScreen = () => {
                         </p>
 
                         <div className="flex flex-col gap-4 max-w-md mx-auto">
-                            {orderId && (
-                                <Link to={`/track-order/${orderId}`} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl shadow-lg shadow-emerald-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-sm">
+                                <Link to={`/order/${orderId}`} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl shadow-lg shadow-emerald-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-widest text-sm">
                                     <Truck size={20} /> Track Your Order
                                 </Link>
-                            )}
                             <div className="grid grid-cols-2 gap-4">
                                 <Link to="/orders" className="w-full py-4 bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-bold rounded-2xl transition-all flex items-center justify-center gap-2 text-sm">
                                     History

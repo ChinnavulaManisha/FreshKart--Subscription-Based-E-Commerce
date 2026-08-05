@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { Search, Filter, Truck, CheckCircle, Clock, XCircle, Package, Calendar } from 'lucide-react';
+const TRACKING_STEPS = ['Order Placed', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
 
 const AdminOrderListScreen = () => {
     const { user } = useAuth();
@@ -61,15 +62,13 @@ const AdminOrderListScreen = () => {
         }
     };
 
-    const markAsDelivered = async (id) => {
-        if (window.confirm('Mark this order as delivered?')) {
-            try {
-                await axios.put(`/orders/${id}/deliver`);
-                fetchOrders();
-            } catch (error) {
-                console.error('Error updating order', error);
-                alert("Failed to update status");
-            }
+    const updateOrderStatus = async (id, status) => {
+        try {
+            await axios.put(`/orders/${id}/status`, { status });
+            fetchOrders();
+        } catch (error) {
+            console.error('Error updating order status', error);
+            alert("Failed to update status");
         }
     };
 
@@ -162,7 +161,7 @@ const AdminOrderListScreen = () => {
                                             </span>
                                         ) : (
                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
-                                                Processing
+                                                {order.orderStatus || 'Processing'}
                                             </span>
                                         )}
                                     </td>
@@ -175,14 +174,16 @@ const AdminOrderListScreen = () => {
                                                 (Order cancelled by the customer)
                                             </span>
                                         ) : (
-                                            !order.isDelivered && (
-                                                <button
-                                                    onClick={() => markAsDelivered(order._id)}
-                                                    className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition shadow-sm active:scale-95"
-                                                >
-                                                    Mark Delivered
-                                                </button>
-                                            )
+                                            <select
+                                                value={order.orderStatus || 'Order Placed'}
+                                                onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                                                className="bg-white border border-gray-200 text-gray-900 text-xs font-bold rounded-lg px-2 py-1.5 shadow-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all cursor-pointer"
+                                                disabled={order.isDelivered}
+                                            >
+                                                {TRACKING_STEPS.map(step => (
+                                                    <option key={step} value={step}>{step}</option>
+                                                ))}
+                                            </select>
                                         )}
                                     </td>
                                 </tr>

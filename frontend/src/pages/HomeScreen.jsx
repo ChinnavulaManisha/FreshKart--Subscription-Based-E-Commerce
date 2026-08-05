@@ -90,7 +90,7 @@ const HomeScreen = () => {
                         return (
                             <Link
                                 key={idx}
-                                to={`/products?category=${cat.name}`}
+                                to={`/products?category=${encodeURIComponent(cat.name)}`}
                                 className={`${cat.color} p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex flex-col items-center gap-3 group`}
                             >
                                 <div className="bg-white rounded-xl p-3 w-full h-24 flex items-center justify-center overflow-hidden">
@@ -141,7 +141,7 @@ const HomeScreen = () => {
                             <img src={getCategoryProduct('Cold Drinks & Juices').image} className="max-h-56 mix-blend-multiply hover:scale-105 transition" />
                             <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full">Deal</div>
                         </div>
-                        <Link to="/products?category=Cold Drinks & Juices" className="text-cyan-700 text-sm font-medium hover:text-red-700 hover:underline mt-4">See all deals</Link>
+                        <Link to={`/products?category=${encodeURIComponent('Cold Drinks & Juices')}`} className="text-cyan-700 text-sm font-medium hover:text-red-700 hover:underline mt-4">See all deals</Link>
                     </div>
 
                     {/* Fresh Produce Spotlight */}
@@ -150,7 +150,7 @@ const HomeScreen = () => {
                         <div className="flex-grow flex items-center justify-center p-4">
                             <img src={getCategoryProduct('Fruits & Vegetables').image} className="max-h-60 object-contain hover:scale-105 transition" />
                         </div>
-                        <Link to="/products?category=Fruits & Vegetables" className="text-cyan-700 text-sm font-medium hover:text-red-700 hover:underline mt-4">Shop Now</Link>
+                        <Link to={`/products?category=${encodeURIComponent('Fruits & Vegetables')}`} className="text-cyan-700 text-sm font-medium hover:text-red-700 hover:underline mt-4">Shop Now</Link>
                     </div>
 
                     {/* Meat & Seafood Spotlight */}
@@ -159,7 +159,7 @@ const HomeScreen = () => {
                         <div className="flex-grow flex items-center justify-center bg-[#F7FAFC] p-4 rounded-lg overflow-hidden relative">
                             <img src={getCategoryProduct('Chicken, Meat & Fish').image} className="max-h-56 hover:scale-105 transition object-contain" />
                         </div>
-                        <Link to="/products?category=Chicken, Meat & Fish" className="text-cyan-700 text-sm font-medium hover:text-red-700 hover:underline mt-4">Shop fresh cuts</Link>
+                        <Link to={`/products?category=${encodeURIComponent('Chicken, Meat & Fish')}`} className="text-cyan-700 text-sm font-medium hover:text-red-700 hover:underline mt-4">Shop fresh cuts</Link>
                     </div>
                 </div>
             </div>
