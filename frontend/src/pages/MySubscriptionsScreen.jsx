@@ -47,6 +47,21 @@ const MySubscriptionsScreen = () => {
         }
     };
 
+    const togglePauseHandler = async (id, currentStatus) => {
+        try {
+            const token = JSON.parse(localStorage.getItem('userInfo'))?.token;
+            const config = { headers: { Authorization: `Bearer ${token}` } };
+            const newStatus = currentStatus === 'paused' ? 'active' : 'paused';
+            await axios.put(`/subscriptions/${id}`, { status: newStatus }, config);
+            
+            setMessage(`Subscription ${newStatus === 'paused' ? 'paused' : 'resumed'} successfully`);
+            fetchSubscriptions();
+            setTimeout(() => setMessage(null), 5000);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     if (loading) return <div className="p-10 text-center">Loading your subscriptions...</div>;
 
     return (
@@ -130,7 +145,12 @@ const MySubscriptionsScreen = () => {
                                         <span>Next Delivery: <span className="font-bold text-gray-700">{new Date(sub.nextDeliveryDate).toLocaleDateString()}</span></span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button className="text-xs font-bold text-gray-500 hover:text-gray-800 px-3 py-1 border rounded transition">Pause</button>
+                                        <button
+                                            onClick={() => togglePauseHandler(sub._id, sub.status)}
+                                            className={`text-xs font-bold px-3 py-1 border rounded transition ${sub.status === 'paused' ? 'text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-100' : 'text-gray-500 hover:text-gray-800'}`}
+                                        >
+                                            {sub.status === 'paused' ? 'Resume' : 'Pause'}
+                                        </button>
                                         <button
                                             onClick={() => cancelHandler(sub._id, sub.billingType)}
                                             className="text-xs font-bold text-red-600 hover:text-red-700 px-3 py-1 border border-red-100 bg-red-50 rounded transition"

@@ -79,13 +79,23 @@ const addOrderItems = asyncHandler(async (req, res) => {
             if (item.isSubscription) {
                 // Determine billing: UPI/Card = Prepaid, COD = Postpaid
                 const billingType = paymentMethod === 'Cash on Delivery' ? 'Postpaid' : 'Prepaid';
+                // Determine initial next delivery date based on frequency
+                let initialNextDate = new Date(item.startDate || Date.now());
+                if (item.frequency === 'daily') {
+                    initialNextDate.setDate(initialNextDate.getDate() + 1);
+                } else if (item.frequency === 'weekly') {
+                    initialNextDate.setDate(initialNextDate.getDate() + 7);
+                } else if (item.frequency === 'monthly') {
+                    initialNextDate.setMonth(initialNextDate.getMonth() + 1);
+                }
+
                 const subscription = new Subscription({
                     user: req.user._id,
                     product: item.product,
                     quantity: item.qty,
                     frequency: item.frequency || 'daily',
                     startDate: item.startDate || Date.now(),
-                    nextDeliveryDate: item.startDate || Date.now(),
+                    nextDeliveryDate: initialNextDate,
                     billingType,
                     status: 'active'
                 });

@@ -46,7 +46,8 @@ const Layout = () => {
   const location = useLocation();
 
   const hideHeaderRoutes = ['/login', '/register', '/logged-out'];
-  const showHeader = !hideHeaderRoutes.includes(location.pathname);
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const showHeader = !hideHeaderRoutes.includes(location.pathname) && !isAdminRoute;
 
   
   const isLandingPage = location.pathname === '/';
