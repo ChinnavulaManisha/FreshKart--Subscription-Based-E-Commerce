@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { useCart } from '../context/CartContext';
 import { Calendar, Clock, Package, ChevronRight, ArrowLeft, Sparkles } from 'lucide-react';
@@ -11,6 +11,7 @@ const SubscriptionScreen = () => {
     const { subscribeToProduct } = useCart();
 
     const [product, setProduct] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [qty, setQty] = useState(1);
     const [frequency, setFrequency] = useState('daily');
@@ -22,6 +23,14 @@ const SubscriptionScreen = () => {
             try {
                 const { data } = await axios.get(`/products/${id}`);
                 setProduct(data);
+                
+                // Fetch related products
+                const { data: allProducts } = await axios.get('/products');
+                const related = allProducts
+                    .filter(p => p.category === data.category && p._id !== data._id)
+                    .slice(0, 4);
+                setRelatedProducts(related);
+                
                 setLoading(false);
             } catch (err) {
                 console.error(err);
@@ -59,9 +68,9 @@ const SubscriptionScreen = () => {
                     Back to Shop
                 </button>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
                     {/* Left: Product Preview */}
-                    <div className="space-y-6">
+                    <div className="lg:col-span-2 space-y-6">
                         <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center justify-center aspect-square overflow-hidden group">
                             <motion.img
                                 initial={{ scale: 0.9, opacity: 0 }}
@@ -82,7 +91,7 @@ const SubscriptionScreen = () => {
                     </div>
 
                     {/* Right: Subscription Form */}
-                    <div className="bg-white p-10 rounded-[3rem] shadow-2xl shadow-emerald-500/5 border border-emerald-50 relative overflow-hidden">
+                    <div className="lg:col-span-3 bg-white p-10 rounded-[3rem] shadow-2xl shadow-emerald-500/5 border border-emerald-50 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
 
                         <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
@@ -183,6 +192,37 @@ const SubscriptionScreen = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Related Products */}
+                {relatedProducts.length > 0 && (
+                    <div className="mt-20">
+                        <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+                            You May Also Like
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {relatedProducts.map((relatedProduct) => (
+                                <Link
+                                    key={relatedProduct._id}
+                                    to={`/product/${relatedProduct._id}`}
+                                    className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-50 transition-all group"
+                                >
+                                    <div className="mb-4 bg-gray-50 rounded-2xl p-4 flex items-center justify-center aspect-square">
+                                        <img
+                                            src={relatedProduct.image}
+                                            alt={relatedProduct.name}
+                                            className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                    </div>
+                                    <h4 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                                        {relatedProduct.name}
+                                    </h4>
+                                    <p className="text-xl font-black text-gray-900">₹{relatedProduct.price}</p>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

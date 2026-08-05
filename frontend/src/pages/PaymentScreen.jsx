@@ -61,6 +61,11 @@ const PaymentScreen = () => {
         setIsUpiVerified(true);
     };
 
+    const handlePaymentMethodSelect = (method) => {
+        setPaymentMethod(method);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     const submitHandler = (e) => {
         if (e) e.preventDefault();
 
@@ -93,7 +98,7 @@ const PaymentScreen = () => {
                             <div className="md:col-span-2 space-y-4">
                                 {/* UPI Option */}
                                 <div
-                                    onClick={() => setPaymentMethod('UPI')}
+                                    onClick={() => handlePaymentMethodSelect('UPI')}
                                     className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'UPI' ? 'border-yellow-400 bg-yellow-50/20 shadow-md' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                                 >
                                     <div className="flex items-center justify-between mb-4">
@@ -169,7 +174,7 @@ const PaymentScreen = () => {
 
                                 {/* Card Option */}
                                 <div
-                                    onClick={() => setPaymentMethod('Card')}
+                                    onClick={() => handlePaymentMethodSelect('Card')}
                                     className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'Card' ? 'border-yellow-400 bg-yellow-50/20 shadow-md' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                                 >
                                     <div className="flex items-center justify-between">
@@ -192,7 +197,7 @@ const PaymentScreen = () => {
 
                                 {/* COD Option */}
                                 <div
-                                    onClick={() => setPaymentMethod('Cash on Delivery')}
+                                    onClick={() => handlePaymentMethodSelect('Cash on Delivery')}
                                     className={`p-6 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'Cash on Delivery' ? 'border-yellow-400 bg-yellow-50/20 shadow-md' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                                 >
                                     <div className="flex items-center justify-between mb-2">
